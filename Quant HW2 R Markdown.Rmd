@@ -1,0 +1,55 @@
+---
+title: "HW2 Quant Assignment"
+author: "Devante Lee1"
+date: "9/29/2020"
+output: pdf_document
+---
+
+
+# I was able to solve this problem with the optimal solution without needing the percentage capacity constraints. When I added the percentage capacity constraint the objective result became incorrect. I wanted to make you aware that I did attempt to add the constraints, but it did not show the correct objective function after it being added as a constraint. 
+
+rm(HW2)
+
+HW2 <- make.lp(,9)
+
+set.objfn(HW2, c(420, 360, 300, 420, 360, 300, 420, 360, 300))
+
+lp.control(HW2, sense = "max")
+
+x1 <- c(1, 1, 1, 0, 0, 0, 0, 0, 0)
+add.constraint(HW2, x1,type = "<=", 750)
+
+x2 <- c(0, 0, 0, 1, 1, 1, 0, 0, 0)
+add.constraint(HW2, x2, type = "<=", 900)
+
+x3 <- c(0, 0, 0, 0, 0, 0, 1, 1, 1)
+add.constraint(HW2, x3, type = "<=", 450)
+
+x4 <- c(20, 15, 12, 0, 0, 0, 0, 0, 0)
+add.constraint(HW2, x4, type = "<=", 13000)
+
+x5 <- c(0, 0, 0, 20, 15, 12, 0, 0, 0)
+add.constraint(HW2, x5, type = "<=", 12000)
+
+x6 <- c(0, 0, 0, 0, 0, 0, 20, 15, 12)
+add.constraint(HW2, x6, type = "<=", 5000)
+
+x7 <- c(1, 0, 0, 1, 0, 0, 1, 0, 0)
+add.constraint(HW2, x7, type = "<=", 900)
+
+x8 <- c(0, 1, 0, 0, 1, 0, 0, 1, 0)
+add.constraint(HW2, x8, type = "<=", 1200)
+
+x9 <- c(0, 0, 1, 0, 0, 1, 0, 0, 1)
+add.constraint(HW2, x9, type = "<=", 750)
+
+row.names <- c("Large1", "Medium1", "Small1", "Large2", "Medium2", "Small2", "Large3", "Medium3", "Small3")
+
+col.names <- c("Plant1capac", "Plant2capac", "Plant3capac", "Plant1Sqft", "Plant2Sqft", "Plant3Sqft", "Plant1Sales", "Plant2Sales", "Plant3Sales")
+
+solve(HW2)
+
+get.objective(HW2)
+
+get.variables(HW2)
+
