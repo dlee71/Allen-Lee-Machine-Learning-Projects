@@ -1,0 +1,41 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+---
+title: "HW3 Quant Modeling 64018"
+author: "Devante Lee1"
+date: "10/18/2020"
+output: html_document
+
+
+library(lpSolveAPI)
+
+HW3 <- make.lp(, 6)
+
+set.objfn(HW3, c(622, 641, 614, 645, 630, 649))
+
+lp.control(HW3, sense = "min")
+
+x1 <- c(1, 1, 0, 0, 0, 0)
+add.constraint(HW3, x1, type = ">=", 80)
+
+x2 <- c(0, 0, 1, 1, 0, 0)
+add.constraint(HW3, x2, type = ">=", 60)
+
+x3 <- c(0, 0, 0, 0, 1, 1)
+add.constraint(HW3, x3, type = ">=", 70)
+
+x4 <- c(1, 0, 1, 0, 1, 0)
+add.constraint(HW3, x4, type = "<=", 100)
+
+x5 <- c(0, 1, 0, 1, 0, 1)
+add.constraint(HW3, x5, type = "<=", 120)
+
+row.names <- c("Warehouse1PlantA", "Warehouse1PlantB", "Warehouse2PlantA", "Warehouse2PlantB", "Warehouse3PlantA", "Warehouse3PlantB")
+col.names <- c("Warehouse1", "Warehouse2", "Warehouse3", "PlantACapacity", "PlantBCapacity")
+
+solve(HW3)
+get.objective(HW3)
+get.variables(HW3)
