@@ -1,0 +1,197 @@
+239 lines (164 sloc)  6.29 KB
+  
+title: "Machine Learning HW2"
+author: "Devante Lee1"
+date: "9/26/2020"
+output: pdf_document
+---
+
+```{r}
+```
+
+
+
+library(readxl)
+library(caret)
+library(dplyr)
+library(class)
+
+```{r}
+UniversalBank <- read.csv("C:/Users/Devante Lee/Downloads/UniversalBank.csv")
+```
+
+```{r}
+View(UniversalBank)
+```
+
+
+
+```{r}
+UniversalBank$PersonalLoan[UniversalBank$PersonalLoan == 0] <- 'No'
+UniversalBank$PersonalLoan[UniversalBank$PersonalLoan == 1] <- 'Yes'
+UniversalBank$PersonalLoan <- factor(UniversalBank$PersonalLoan)
+```
+
+```{r}
+ind <- sample(2, nrow(UniversalBank), replace = T, prob = c(.6, .4))
+trainingd <-UniversalBank[ind== 1, ]
+validationd <- UniversalBank[ind== 2, ]
+```
+
+set.seed(123)
+tr.control<- trainControl(method = "repeatedcv",
+                          number = 10,
+                          repeats = 3)
+tr.control
+
+set.seed(222)
+fit <- train(PersonalLoan ~ .,
+             data = trainingd,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+              tuneGrid = expand.grid(k = 5))
+pred <- predict(fit, newdata = trainingd)
+confusionMatrix(pred, trainingd$PersonalLoan)
+
+
+fit1 <- train(PersonalLoan ~ .,
+             data = validationd,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+              tuneGrid = expand.grid(k = 5))
+pred1 <- predict(fit1, newdata = validationd)
+pred1
+confusionMatrix(pred1, validationd$PersonalLoan)
+
+
+new_data <- c(40, 10, 84, 2, 2, 0, 0, 0, 1, 1, 0, 1, 0)
+added <- as.data.frame(t(new_data[1:6]))
+column <- c("Age", "Experience", "Income", "Family", "CCAvg", "Mortgage")
+scale(added)
+work = c(added$Age,added$Expereince,added$Income,added$Family,added$CCAvg,added$Mortgage, new_data[7], new_data[8], new_data[9], new_data[10], new_data[11], new_data[12], new_data[13])
+
+fit1 <- train(PersonalLoan ~ .,
+             data = validationd,
+             method = 'knn',
+             work,
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+              tuneGrid = expand.grid(k = 5))
+fit1
+
+
+##Part 2
+
+
+
+UniversalBank$PersonalLoan[UniversalBank$PersonalLoan == 0] <- 'No'
+UniversalBank$PersonalLoan[UniversalBank$PersonalLoan == 1] <- 'Yes'
+UniversalBank$PersonalLoan <- factor(UniversalBank$PersonalLoan)
+```
+
+
+ind1 <- sample(3, nrow(UniversalBank), replace = T, prob = c(.5, .3, .2))
+trainingd <-UniversalBank[ind1== 1, ]
+validationd <- UniversalBank[ind1== 2, ]
+testingd <- UniversalBank[ind1==3, ]
+```
+
+
+set.seed(123)
+tr.control<- trainControl(method = "repeatedcv",
+                          number = 10,
+                          repeats = 3)
+tr.control
+```
+
+
+set.seed(222)
+fit <- train(PersonalLoan ~ .,
+             data = trainingd,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+             tuneGrid = expand.grid(k = 5))
+```
+
+
+set.seed(222)
+fit <- train(PersonalLoan ~ .,
+             data = trainingd,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+             tuneGrid = expand.grid(k = 5))
+pred <- predict(fit, newdata = trainingd)
+pred
+```
+
+
+
+fit1 <- train(PersonalLoan ~ .,
+             data = validationd,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+             tuneGrid = expand.grid(k = 5))
+pred1 <- predict(fit1, newdata = validationd)
+```
+
+
+fit2 <- train(PersonalLoan ~ .,
+             data = testingd,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+             tuneGrid = expand.grid(k = 5))
+        
+```
+
+
+combineddata <- as.data.frame(trainingd , testingd)
+combineddata
+```
+
+
+Predictedvalues <- train(PersonalLoan ~ .,
+             data = combineddata,
+             method = 'knn',
+             work,
+             tuneLength = 20,
+             trControl = tr.control,
+             preProc = c("center", "scale"),
+             tuneGrid = expand.grid(k = 5))
+Predictedvalues
+```
+
+```
+
+combinedpred <- predict(Predictedvalues, newdata = combineddata)
+combinedpred
+```
+
+
+pred2<- predict(fit2, newdata = testingd)
+pred2
+```
+
+
+plot(fit)
+
+
+# a) According to our data this customer would be classified as a loan not accepted.
+
+# b) The values of K that balances between over fitting and underfitting is 9. 5 is the optimal value as it minimizes the error in the data allowing this to show the highest level of accuracy. This data is on the realm of being overfitted to the data as the model fits this data a bit too well. The accuracy of the data also decreases as we run our testing and validation data.I know this is not always the best indicator but we cannot ignore this in this data sample.
+
+# c) This data set balances between recall and precision. I feel this model leans more toward the former error, sensitivity (recall) which is extremely high which is maximizing the models ablity to find relevant patterns throughout the data. Accuracy being extremely high is also not always an indicator of a great model and performance of the model. A very large number of the data points are also in one category (True negative). This is one of the main things to look for in your model possibly having some classification issues.
+
+# d) The differences among the three different data sets is that the validation data provides the highest level of accuracy. This has the highest accuracy levels due to the large amount True Negatives and True positives inside of this data set.The training data based on the differerent K accuracy points is not as accurate as the validation model in terms of accuracy of the model. When the sets are added together the accuracy seems to incerease about but stays in the middle range with the added data that was inputed into the data fram.
