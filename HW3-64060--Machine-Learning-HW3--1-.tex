@@ -1,0 +1,114 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+title: ``HW\# Learning'' author: ``Devante Lee1'' date: ``10/13/2020''
+output: html\_document
+
+install.packages(``readxl'')
+
+library(readxl) library(naivebayes) library(e1071) library(caret)
+library(ISLR) library(e1071) library(pROC) library(plotROC)
+
+FlightDelays \textless- read\_excel(``C:/Users/Devante
+Lee/Downloads/FlightDelays.xlsx'')
+
+Flightdata \textless- FlightDelays{[}c(``CARRIER'', ``DEP\_TIME'',
+``DEST'', ``DAY\_WEEK'', ``ORIGIN'', ``Flight\_Status''){]}
+
+DEP\_TIME \textless- Flightdata\$DEP\_TIME
+
+Flightdata\$DEP\_TIME \textless- cut(DEP\_TIME, 8)
+
+Flightdata\(DAY_WEEK <- factor(Flightdata\)DAY\_WEEK)
+Flightdata\(DEP_TIME <- factor(Flightdata\)DEP\_TIME)
+
+set.seed(123)
+
+N \textless- createDataPartition(Flightdata\$Flight\_Status, p =.6, list
+= F)
+
+flighttrain \textless-Flightdata{[}N,{]}
+
+flighttest \textless- Flightdata{[}-N,{]}
+
+bayes1 \textless- naiveBayes(Flight\_Status \textasciitilde{} ., data =
+flighttrain)
+
+pred1 \textless- predict(bayes1, newdata = flighttest, type = ``raw'')
+
+CrossTable(x= flighttest\$Flight\_Status, y = pred1)
+
+P1 \textless- predict(bayes1, flighttest)
+
+library(gmodels) table(x=flighttrain\(Flight_Status, y=flighttrain\)DEST
+)
+
+roc(flighttest\$Flight\_Status, pred1{[},2{]})
+
+plot.roc(flighttest\$Flight\_Status, pred1{[},2{]})
+
+\end{document}

@@ -1,0 +1,60 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+---
+title: "HW# Learning"
+author: "Devante Lee1"
+date: "10/13/2020"
+output: html_document
+
+install.packages("readxl")
+
+library(readxl)
+library(naivebayes)
+library(e1071)
+library(caret)
+library(ISLR)
+library(e1071)
+library(pROC)
+library(plotROC)
+
+FlightDelays <- read_excel("C:/Users/Devante Lee/Downloads/FlightDelays.xlsx")
+
+Flightdata <- FlightDelays[c("CARRIER", "DEP_TIME", "DEST", "DAY_WEEK", "ORIGIN", "Flight_Status")]
+
+DEP_TIME <- Flightdata$DEP_TIME
+
+Flightdata$DEP_TIME <- cut(DEP_TIME, 8)
+
+
+Flightdata$DAY_WEEK <- factor(Flightdata$DAY_WEEK)
+Flightdata$DEP_TIME  <- factor(Flightdata$DEP_TIME)
+
+set.seed(123)
+
+
+N <- createDataPartition(Flightdata$Flight_Status, p =.6, list = F)
+
+flighttrain <-Flightdata[N,]
+
+flighttest <- Flightdata[-N,]
+
+bayes1 <- naiveBayes(Flight_Status ~ ., data = flighttrain)
+
+
+pred1 <- predict(bayes1, newdata = flighttest, type = "raw")
+
+CrossTable(x= flighttest$Flight_Status, y = pred1)
+
+P1 <- predict(bayes1, flighttest)
+
+library(gmodels)
+table(x=flighttrain$Flight_Status, y=flighttrain$DEST )
+
+
+roc(flighttest$Flight_Status, pred1[,2])
+
+plot.roc(flighttest$Flight_Status, pred1[,2])
+
