@@ -1,0 +1,77 @@
+---
+title: "Quant HW4"
+author: "Devante Lee1"
+date: "10/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(Benchmarking)
+```
+
+```{r}
+inputx <- matrix(c(150, 400, 320, 520, 350, 320, 200, 700, 1200, 2000, 1200, 700), ncol = 2)
+  
+outputy <- matrix(c(14000, 14000, 42000, 28000, 19000, 14000, 3500, 21000, 10500, 42000, 25000, 15000), ncol = 2)
+
+suppliesp <- matrix(c(.2, .7, 1.2, 2, 1.2, .7, 14000, 14000, 42000, 28000, 19000, 14000), ncol = 2)
+
+colnames(inputx) <- c("Staffhoursperday", "Suppliesperday")
+colnames(outputy) <-c("ReimbursedPatientDays", "PrivatelyPaidPatientDays")
+```
+
+
+```{r}
+ef <- dea(inputx,outputy, RTS = "fdh")
+peers(ef)
+lambda(ef)
+dea.plot.isoquant(inputx, outputy, RTS = "fdh")
+```
+When using this assumption it seems that all of the facilities 1-6 are efficiently using all of there resources withing the facility.
+```{r}
+efc <- dea(inputx, outputy, RTS = "crs")
+peers(efc)
+lambda(efc)
+dea.plot.isoquant(inputx, outputy, RTS = "crs")
+
+```
+Facilities 1-4 are efficent in the usage of their resources, but facilities 5 and 6 are not as efficient. The Hypothetical Comparison unit would have facility 4 lying between facilities 1, 2, and 4. Facility 5 is 82% efficient, which means that is 18% away from the HCU in order for this to be Facility to be efficient. The HCU for facility 6 would also be between points 1, 2, and 4, but would be the closet to point 2. facility 6 is a bit more efficient than Facility 5 with 87% efficieny, making it 13% away from the HCU of full efficiency.
+```{r}
+efv <- dea(inputx, outputy, RTS = "vrs")
+peers(efv)
+lambda(efv)
+dea.plot.isoquant(inputx, outputy, RTS = "vrs")
+
+```
+Facilities 1-5 are all maxing out their efficiency with this particular assumption. Facility 6 is currently not as efficient as this facility lies between points 1, 2, 5, with it being closest to 1 in the HCU. With this lying between these points.
+```{r}
+efi <- dea(inputx, outputy, RTS = "irs")
+peers(efi)
+lambda(efi)
+dea.plot.isoquant(inputx, outputy, RTS = "irs")
+
+```
+Facilities 1-5 are all maxing out their efficiency in terms of all there components. This facility lies between facilities 1, 2, and 5 and when all of the lambdas are included this facility is shown to by efficient as it lies between these points and totaled up the lambdas equal to 1. This assumption (irs) is exactly identical to assumption (vrs). The two assumptions show the exact same results.
+
+```{r}
+efd <- dea(inputx, outputy, RTS = "drs")
+peers(efd)
+lambda(efd)
+dea.plot.isoquant(inputx, outputy, RTS = "drs")
+
+```
+All of these facilities are efficient outside of Facility 5 & Facility 6.Facility 5 is about 18% away from complete efficieny as it is 82% efficient currently and Facility 6 is about 13% away from full efficieny as it is currently at 87% capacity. This auumption correlates directly to assumption (crs) as both of these assumptions have two facilities showing as inaccurate with the exact same efficiency values
+
+
+FRH showing as an unknown scale
+
+eff <- dea(inputx, outputy, RTS = "FRH")
+
+
+Below I have summarized my data into a tabular format
+```{r}
+DEA_results <- read.csv("DEA results.csv")
+
+DEA_results
+```
+
