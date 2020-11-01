@@ -1,0 +1,193 @@
+---
+title: "Untitled"
+author: "Devante Lee1"
+date: "10/25/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+```{r}
+library(tidyverse)
+library(factoextra)
+library(caret)
+library(flexclust)
+library(cluster)
+library(dplyr)
+library(TSdist)
+```
+
+
+```{r}
+Universities <- read.csv("C:/Users/Devante Lee/Downloads/Universities.csv")
+```
+
+
+```{r}
+p<- ggplot(Universities, aes(out.of.statetuition, in.statetuition, label = rownames(Universities)))
+```
+
+```{r}
+p + geom_text(check_overlap = T) 
+```
+512(Bates College) has the largest cost both in state and out of state tuition wise. There tuition cost are equal.
+
+Higher in-state tuition correlates to higher out of state tuition.
+```{r}
+a <- ggplot(Universities, aes(x = applirecd, y= Graduationrate, label = rownames(Universities)))
+```
+
+```{r}
+a + geom_text(check_overlap = T)
+```
+Point 751 (Rutgers State University) is very much in front of every other school in terms of the amount of appications received and they are a bit above the average in terms of graduation rates
+
+Point 772 (Cazenovia University) has by far the greatest graduation rate out of anyone in this study.
+
+```{r}
+g <- ggplot(Universities, aes(State))
+
+g + geom_bar(aes(fill= State)) 
+```
+When we are looking to use external factors to try and decipher some of this data the U.S State population is an extremely important factor in terms of how many colleges are allocated to each state. With more colleges in certain states students in those states have many more educational oppurtunities than students in different states. 
+
+Top 5 Populations:
+Population-State(Amount of colleges)
+39,747,267-California(70)
+29,087,070-Texas(60)
+21,646,155-Florida(30)
+19,491,339-New York(101)
+12,813,969-Pennsylvania(83)
+```{r}
+unidata <- Universities[,c(3:20)]
+```
+unidata
+```{r}
+Norma <- scale(unidata)
+
+```
+
+```{r}
+Tupdated <- Norma[476,]
+
+Tupdated
+```
+
+```{r}
+set.seed(123)
+
+distance <- get_dist(Norma)
+```
+
+
+```{r}
+fviz_dist(distance)
+```
+
+```{r}
+normal <- na.omit(Norma)
+```
+
+```{r}
+k4 <- kmeans(normal, centers = 4, nstart = 20)
+
+k4$centers
+```
+Cluster One is comprised of the most Private schools and this correlates to less applications accepted and applications received by the University.With the less students this allows for more faculty that can help the lesser amount of students as the disparity between students and faculty isn't extreme. 
+
+Cluster two has the largest amount of additional fees that and posonal loans being taken out to pay for schooling. This seems to show that students who attend Public Universities take out a higher amount of loans than students who attend Private Universities.
+
+Cluster three has the largest amount of Public Schools and they also have the lowest Graduation Rate. This shows that students at Private Schools possibly take their education a bit more serious as their cost is higher. Students at Public Schools seem to have many more financial concerns as seen in the clustering, this could cause stress, whih would then cause grades to faulter. 
+
+Cluster four schools are cearly the overall most expensive schools to choose from overal (Tuition, room and board). They also have the greatest graduation rate which make sense with the large investment that is spent overall.
+```{r}
+fviz_cluster(k4, data = normal[,5:6])
+```
+Clusters with more students from top 10 schools also have more students from top 25 schools
+
+California has a large amount of schools in Cluster 4
+```{r}
+fviz_cluster(k4, data = normal[,7:8])
+```
+There is a small correlation between how many Parttime students a University has and how many fulltime students they have.
+
+```{r}
+fviz_cluster(k4, data = normal[, 11:12])
+```
+Universities in Illinois and Indiana have large amount of data points in Cluster 1 as these states have some of the lowest room and board cost. These states are directly next to each other on the map so maybe there is a trickle down effect as these two states share a boarder.
+
+```{r}
+
+
+clust1 <- k4$centers[1,]
+clust2 <- k4$centers[2,]
+clust3 <- k4$centers[3,]
+clust4 <- k4$centers[4,]
+
+clust3
+```
+
+Cluster1
+```{r}
+Clust1andTufts <- rbind(Tupdated, clust1)
+
+dist(Clust1andTufts, method = "euclidean")
+
+```
+
+Cluster2
+```{r}
+clust2
+
+Clust2andTufts <- rbind(Tupdated, clust2)
+
+dist(Clust2andTufts, method = "euclidean")
+```
+
+Cluster3
+```{r}
+clust3
+
+Clust3andTufts <- rbind(Tupdated, clust3)
+
+dist(Clust3andTufts, method = "euclidean")
+```
+
+Cluster4
+```{r}
+clust4
+
+Clust4andTufts <-rbind(Tupdated, clust4)
+
+dist(Clust4andTufts, method = "euclidean")
+```
+
+Tufts University is the closest in distance to cluster 4. Below I have updated the missing factor in Tufts University which was the PYundergrad
+
+```{r}
+Tupdated$PTundergrad <- -0.48283528 
+```
+
+
+
+#MANHATTAN DISTANCE
+```{r}
+
+k4 = kcca(normal, k=4, kccaFamily("kmedians"))
+k4
+cluster_index <- predict(k4)
+cluster_index
+image(k4)
+```
+```{r}
+fviz_nbclust(normal, kmeans, method = "wss")
+```
+The distance between four and five has the lowest dropoff after larger declines. The optimal amount of K's is 4
+
+Second clustering created
+```{r}
+KMclust = kmeans(normal, 4)
+KMclust
+```
+
