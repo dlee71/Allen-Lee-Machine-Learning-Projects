@@ -1,0 +1,55 @@
+---
+title: "Quant 5 HW"
+author: "Devante Lee1"
+date: "11/1/2020"
+output: html_document
+---
+Objective function: 
+20x1 + 15x2 + 25x3 + 6yic + -6yic + -3yid
+
+Mathematical objective
+
+Maximize 20x1 + 15x2 + 25x3 + 6yic + -6yic + -3yid
+          Y1 + - y1- = 6x1 + 4x2+ 5x3 – 50
+          -Y2 - = 8x2 + 7x2 + 5x3 – 75
+          
+Final Formulation
+Maximize Z = 20x1 + 15x2 + 25x3 + 6yic + -6yic + -3yid
+ 6x1 + 4x2+ 5x3 -(Y1 + - y1-) = 50
+ 8x1 + 7x2 + 5x3 -(-y2) >= 75
+
+
+```{r}
+library(lpSolveAPI)
+```
+
+```{r}
+HW5 <- make.lp(,6)
+```
+
+```{r}
+set.objfn(HW5, c(20, 15, 25, 6, -6, -3))
+
+```
+
+```{r}
+lp.control(HW5, sense = "max")
+```
+
+
+```{r}
+x1 <- c(6, 4, 5, 1, 1, 0 )
+add.constraint(HW5, x1, type = "=", 50)
+```
+
+```{r}
+x2 <- c(8, 7, 5, 0, 0, 1)
+add.constraint(HW5, x2, type = ">=", 75)
+```
+```{r}
+solve(HW5)
+get.objective(HW5)
+get.variables(HW5)
+```
+We will be able to get our total profit to 208,000,000.
+In conclusion it seems that the first goal is completley satisfied. The second goal however is not satisfied which resulted in a penalty for exceeding this goal by 833. The penalty for exceeding this goal is 33.33.
