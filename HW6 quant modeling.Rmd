@@ -1,0 +1,80 @@
+---
+title: "Quant Modeling HW5"
+author: "Devante Lee1"
+date: "11/16/2020"
+output: html_document
+---
+
+```{r}
+library(lpSolveAPI)
+```
+
+```{r}
+HW6 <- make.lp(,7)
+```
+
+```{r}
+set.objfn(HW6, c(775, 800, 800, 800, 800, 775, 750))
+```
+
+```{r}
+lp.control(HW6, sense = "min")
+```
+
+```{r}
+shift1 <- c(0, 1, 1, 1, 1, 1, 0)
+add.constraint(HW6, shift1, type = ">=", 18)
+```
+
+```{r}
+shift2<- c(0, 0, 1, 1, 1, 1, 1)
+add.constraint(HW6, shift2, type = ">=", 27)
+```
+
+```{r}
+shift3 <- c(1, 0, 0, 1, 1, 1, 1)
+add.constraint(HW6, shift3, type = ">=", 22)
+```
+
+```{r}
+shift4 <- c(1, 1, 0, 0, 1, 1, 1)
+add.constraint(HW6, shift4, type = ">=", 26)
+```
+
+```{r}
+shift5 <- c(1, 1, 1, 0, 0, 1, 1)
+add.constraint(HW6, shift5, type = ">=", 25)
+```
+
+```{r}
+shift6 <- c(1, 1, 1, 1, 0, 0, 1)
+add.constraint(HW6, shift6, type = ">=", 21)
+```
+
+```{r}
+shift7 <- c(1, 1, 1, 1, 1, 0, 0)
+add.constraint(HW6, shift7, type = ">=", 19)
+```
+
+```{r}
+solve(HW6)
+get.objective(HW6)
+```
+The total cost is 25175
+
+```{r}
+as.integer(get.variables(HW6))
+```
+Shift 1 has 19 workers availible
+
+Shift 2 has 31 workers availible
+
+Shift 3 has 28 workers availible
+
+Shift 4 has 26 workers availible
+
+Shift 5 has 32 workers availible
+
+Shift 6 has 21 workers availible
+
+Shift 7 has 32 workers availible
