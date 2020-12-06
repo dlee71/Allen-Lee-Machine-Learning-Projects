@@ -1,0 +1,189 @@
+---
+title: "HW5  Machine Learning"
+author: "Devante Lee1"
+date: "11/12/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(factoextra)
+library(caret)
+library(flexclust)
+library(cluster)
+library(dplyr)
+library(dendextend)
+```
+
+
+
+```{r}
+Cereals <-read.csv("C:/Users/Devante Lee/Downloads/Cereals.csv")
+```
+
+
+```{r}
+Cereals2 <- Cereals[0:77,]
+```
+
+```{r}
+rownames(Cereals2) <- c("All_Bran", "100%_Natural_Bran", "All-Bran", "All-Bran_with_Extra_Fiber",
+                       "Almond_Delight", "Apple_Cinnamon_Cheerios", "Apple_Jacks", "Basic_4",
+                  "Bran_Chex", "Bran_Flakes", "Cap'n'Crunch",  "Cheerios", "Cinnamon_Toast_Crunch",
+                   "Clusters", "Cocoa_Puffs" , "Corn_Chex", "Corn_Flakes", "Corn_Pops", "Count_Chocula",
+                  "Cracklin'_Oat_Bran", "Cream_of_Wheat_(Quick)", "Crispix", "Crispy_Wheat_&_Raisins", "Double_Chex",
+                  "Froot_Loops", "Frosted_Flakes", "Frosted_Mini-Wheats", "Fruit_&_Fibre_Dates,_Walnuts,_and_Oats",
+                  "Fruitful_Bran", "Fruity_Pebbles", "Golden_Crisp", "Golden_Grahams",  "Grape_Nuts_Flakes", "Grape-Nuts",
+                  "Great_Grains_Pecan", "Honey_Graham_Ohs", "Honey_Nut_Cheerios", "Honey-comb", 
+                  "Just_Right_Crunchy__Nuggets", "Just_Right_Fruit_&_Nut", "Kix", "Life", "Lucky_Charms", "Maypo",
+                  "Muesli_Raisins,_Dates,_&_Almonds", "Muesli_Raisins,_Peaches,_&_Pecans", 
+                  "Mueslix_Crispy_Blend", "Multi-Grain_Cheerios", "Nut&Honey_Crunch", "Nutri-Grain_Almond-Raisin",
+                  "Nutri-grain_Wheat", "Oatmeal_Raisin_Crisp", "Post_Nat._Raisin_Bran", "Product_19",
+                  "Puffed_Rice", "Puffed_Wheat", "Quaker_Oat_Squares", "Quaker_Oatmeal", "Raisin_Bran", "Raisin_Nut_Bran",
+                  "Raisin_Squares", "Rice_Chex", "Rice_Krispies", "Shredded_Wheat", 
+                  "Shredded_Wheat_'n'Bran", "Shredded_Wheat_spoon_size", "Smacks", "Special_K",
+                  "Strawberry_Fruit_Wheats", "Total_Corn_Flakes",  "Total_Raisin_Bran", "Total_Whole_Grain",
+                  "Triples", "Trix", "Wheat_Chex", "Wheaties", "Wheaties_Honey_Gold" 
+                  )
+```
+
+
+
+
+```{r}
+Cerealsdata <- Cereals2[,4:16]
+```
+
+```{r}
+scale(Cerealsdata)
+```
+
+```{r}
+Cereals1 <- na.omit(Cerealsdata)
+```
+
+```{r}
+d <- dist(Cereals1, method = "euclidean")
+hc <- hclust(d, method = "complete")
+plot(hc)
+rect.hclust(hc, k= 6 , border = 1:6)
+```
+While comparing the differences between the euclidean distance and the hierarchical clustering it is pretty obvious to see data being swithed around to different areas.It is showing for the most part that the cereals didn't completely change clusters. The differences came mostly in the location of the cluster placement and not the switching. If I was to keep the clusters at a height of 150 there would essentially be very minimal change. If I moved my cluster criteria to 100 there would be mass changes in every cluster that has been created.
+
+```{r}
+Cereals1single <- agnes(Cereals1, method = "single")
+Cereals1complete <- agnes(Cereals1, method = "complete")
+Cereals1average <- agnes(Cereals1, method = "average")
+Cereals1ward <- agnes(Cereals1, method = "ward")
+```
+
+```{r}
+print(Cereals1single$ac)
+```
+```{r}
+print(Cereals1complete$ac)
+```
+```{r}
+print(Cereals1average$ac)
+```
+```{r}
+print(Cereals1ward$ac)
+```
+Best linkage method == Cereals1ward
+
+```{r}
+pltree(Cereals1ward, cex = 0.7, hang = -1, main = "Dendrogram of Agnes")
+```
+Hierarchical clustering doesn't handle big data the way that kmeans clustering can. This quite possibly the biggest downfall of using hierarchical clustering over kmeans
+
+I would choose six clusters
+
+```{r}
+PartitionA <- Cereals1[1:38,]
+PartitionA1ward <- agnes(PartitionA, method = "ward")
+```
+
+```{r}
+pltree(PartitionA1ward, cex =0.7, main = "PartitionA Dendrogram")
+```
+
+
+```{r}
+PartitionB <- Cereals1[40:74,]
+PartitionB
+PartitionB1ward <- agnes(PartitionB, method = "ward")
+```
+```{r}
+view(PartitionB)
+```
+
+
+```{r}
+pltree(PartitionB1ward, cex = 0.6, main = "PartitionB Dendrogram")
+```
+
+When looking at the two new dendrograms (ParitionA &  PartitionB) it seems that this hierarchical cluster is very stable. This dendrogram doesn't shift greatly when the data is partitioned making it stable. There are some minimal shifts in the data, but overall this data is extremely stable when being partitioned. The 5th and 6th clusters are also very closely knitted together in terms of the euclidean distance calculation.
+
+```{r}
+set.seed(222)
+
+Cer <- kmeans(Cereals1, centers = 6, nstart = 20)
+
+Cer$centers
+```
+I would choose Cluster 1 as the healthiest cereal to provide to the school. With the highest amount of protein, potassium, fiber, and the second highest amount of vitamins. This cereal also has the lowest amount of carbohydrates. When using this data in cluster analysis we are looking for the overall healthiest cereal. This means there needs to be certain factors that are given more significance than others. Factors such as Vitamins, Potassium, fiber, and proteins should have a very high emphasis when choosing which cereal you should serve to the students. Categories such as cups, shelf, and weight should be given a bit less consideration.
+
+```{r}
+clust1 <- Cer$centers[,1]
+clust2 <- Cer$centers[,2]
+clust3 <- Cer$centers[,3]
+clust4 <- Cer$centers[,4]
+clust5 <- Cer$centers[,5]
+clust6 <- Cer$centers[,6]
+
+
+```
+
+```{r}
+Clust1and2 <- rbind(clust1, clust2)
+
+dist(Clust1and2, method = "euclidean")
+```
+
+```{r}
+Clust3and4 <- rbind(clust3, clust4)
+
+dist(Clust3and4, method = "euclidean")
+```
+
+```{r}
+Clust5and6 <- rbind(clust5, clust6)
+
+dist(Clust5and6, method = "euclidean")
+```
+
+When looking at the stability of all the clusters it is clear by calculating the euclidean distance that clusters 5 and 6 are pretty closely knitted together. The others are not as closely knitted to each other.  
+
+```{r}
+fviz_cluster(Cer, data = Cereals1[,8:9])
+```
+
+```{r}
+Healthycereals <- Cereals %>%
+  select(name, fiber, protein, potass, vitamins)
+Healthycereals
+```
+
+```{r}
+Allcereals <- na.omit(Healthycereals)
+Allcereals <- agnes(Allcereals, method = "ward")
+``` 
+
+```{r}
+pltree(Allcereals, cex = 0.7, hang = -1, main = "Dendrogram of Agnes")
+```
+
+When looking at both Hierarchical clustering and kmeans there are differences that definitely make them preferred methods of usage in different situations. When looking into comparing both HC and Kmeans the distance needs to be quantifiable in both cases in order for the algorithm to work. This is one of the firm similarities amoung both clustering methods. When dealing with smaller data sets you would mostly rely on hierarchical clustering over kmeans clustering. In opposite situations it is pertinent to use Kmeans clustering on larger data sets.Kmeans clustering has been widely thought of as a much more scaleable clustering algorithm than hierarchical clustering. A pro of using hierarchical clustering is that it is much easier for you decipher results than in Kmeans. Kmeans is much more time consuming, which would make sense as it is the preferred usage in many cases for larger datasets. HC allows for us to better view how many clusters we should have after the dendrogram has been created. When using the kmeans algorithm it is very important to already have an idea of how  many clusters you will be using before you have created the algorithm its self. The usage of Kmeans clustering would be more cost intensive and time consuming when be used, but it would be the preffered method when working on much larger sets of data. Hierarchical Clustering provides a better visual in many cases, but the data must be smaller in order to be effective and determine strategies from what you have recovered.
+
+
+
