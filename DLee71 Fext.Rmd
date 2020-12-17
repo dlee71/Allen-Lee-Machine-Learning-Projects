@@ -1,0 +1,254 @@
+---
+title: "Dlee71Fext"
+author: "Devante Lee1"
+date: "12/17/2020"
+output: html_document
+
+install.packages("arulesViz", dependencies = T)
+```{r}
+library(arules)
+library(TSP)
+library(arulesViz)
+library(esquisse)
+library(shiny)
+library(factoextra)
+library(dplyr)
+library(naivebayes)
+library(ggplot2)
+library(e1071)
+library(caret)
+library(ISLR)
+library(e1071)
+library(pROC)
+library(plotROC)
+library(gmodels)
+```
+
+```{r}
+Bathsoap <- read.csv("C:/Users/Devante Lee/Downloads/BathSoap.csv")
+```
+
+
+```{r}
+B5 <- kmeans(Bathsoap, centers = 5, nstart = 20)
+```
+
+```{r}
+Bathsoapscaled <- scale(Bathsoap)
+```
+
+```{r}
+  fviz_nbclust(Bathsoapscaled, kmeans, method = "wss")
+```
+
+```{r}
+B5$centers
+```
+
+```{r}
+fviz_cluster(B5, data = Bathsoap[,11:12])
+```
+
+```{r}
+fviz_cluster(B5, data = Bathsoap[,12:13])
+```
+
+1a. When looking at the clusters it shows that consumers in cluster 3 are consistently more likely to show brand loyalty. They seem to purchase a large amount of product as well. They purchase the second largest amount of volume at 13,777. Cluster 1 would very possibly be the last cluster that I would target in terms of loyalty. I believe that the optimal k should be chosen by using the elbow method. It seems that when k first levels off it is reaching the point of 5. That is how I determined that k initially should be 5. 
+
+
+```{r}
+fviz_cluster(B5, data = Bathsoap[,19:20])
+```
+
+1b. Cluster 3 is also the cluster that seems to purchase product most without any sort of discount attached to it. This is possibly the reason that the pricing of there items are much lower than other consumers. They will most likely be the consumer that IMRB customers should target if their customers are less willing to provide discounts, but are also attempting to move a large amount of products at a lower rate. Consumers in cluster 3 are my frst target as they are much more likely to purchase greater item qty than consumers in 1 & 2 of a brand for a longer period of time. When looking into these consumers it is clear that consumers in Cluster 3 & 5 are much more likely to purchase a greater amount of volume of one single brand (Br. Cd. 55), (5)0.225 and (3)0.359 are the largest qty of one single brand out of all items that will be purchased. This shows that loyalty in a brand is not the same between consumers. Br..Cd..55 clearly has the most loyalty of all consumers who are purchasing product Cluster 3 shows great loyalty to a specific brand when factoring in one of the most important factors when considering loyalty (Percentage of volume purchased of a brand). The only down fall of cluster 3 is the fact that they have the least # of Transactions of all clusters. So with high loyalty comes lower transactions. Meaning that there is a bit of give and take in this cluster. Cluster 5 is also a cluster to market at with their loyalty to a single brand and the grea volume that they purchase. With this cluster having a larger number of females it is extremely important ot hfactor in that they do a larger portion of the household shopping aong families. By using the brand share variables as is we have a much greater distance between customer clusters. This allows for those reviewing the data to better determine the actual averages of a cluster that have been reported by the consumer. This makes the data a bit easier to read a decipher in my humble opinoin. We would not want to use a single derived variable as that would calculate all of the variables based upon one variable which would skew our data and eventually skew our results as well. 
+
+1c. When attempting to answer the final question of which cluster best satisfies how both purchase behaivor and Basis of purchase, I feel that two markets would be very intriguing to pursue. These two would be Cluster 3 and also Cluster 5.Both of these clusters contain consumers who are not extremely affluent, this is the reasoning why I feel lower priced products would be the best way to go in direct mail promotionals. In terms of the data I understand that Cluster 5 has a lower amount when looking into Brand Runs, but the consistency of their brand shows that they always know what their bread and butter is and that is immensly important in attempting to recruit a loyal customer. Cluster 3 on the other hand has the greatest brand run of all the cluster. That is one of the cases in how they differ, another case is as follows. Cluster 5 seems very value oriented while Cluster 3 is not at all value oriented. It seems that this is in correlation with the Gender (SEX) of the consumer. When the Gender leans more toward a male homemaker it is very likely that Value is not as important to the consumer. The Qty. of the purchase is also not as high with male consumers. When we look at the Gender (SEX) and females are the more prevalent ones in the cluster. it is clear that Value becomes very important and necessary in terms of their purchase choice. I would also like to pitch Cluster 1 & 2 as an alternative as well as they purchased the single two greatest qty. of an specificed item (PropCat.5) at (1)0.480 & (2)0.492. This would be the alternative if we were adverstising to a more affluent group of consumers who are likely to be very loyal consumers. The issue with these two clusters is the lack of volume that will be purchased from these two clusters. I am assuming this is due to the costly products being purchased among these two clusters, but that limits the growth potential in some cases excluding a very large poorer indian market. With saying all of this Cluster 5 would be my recommended cluster to advertise at with promotions.
+
+```{r}
+ggplot(Bathsoap) +
+ aes(x = Affluence.Index, y = Value) +
+ geom_point(size = 1L, colour = "#0c4c8a") +
+ theme_minimal()
+```
+
+2.(Demographics- Affluence Index) In attempting to find markets that are more likely to buy products it is pretty clear that poor to middle class consumers are more likely to be very Value intensive when looking at purchases. This is not a shock to anyone as poorer people have no choice but to look at value as an important factor of purchasing items. It is also important to see that there are many more consumers to market to by focusing on a Value intensive approach. This will lead to a much larger segmation of the market which will be able to purchase product. So a big factor on segmentation is to understanad that promotions toward lower priced product would be immensely beneficial to the overall growth of soap companies as these product will be purchased at such a high level. It should also be pointed out that the lower priced product don't have a ton of coupon usage related to them in terms of when transactions are made.This shows that coupons would be less effective on this consumer as they understand what they are currently buying is already priced very fairly.
+
+```{r}
+Classmodel <- Bathsoap[c("SEC", "SEX", "HS", "Affluence.Index", "No..of.Brands", "Total.Volume", "No..of..Trans", "Avg..Price", "Br..Cd..55")]
+
+```
+
+```{r}
+Classmodel$SEX [Classmodel$SEX == 0] <- "Male"
+Classmodel$SEX [Classmodel$SEX == 1] <- "Male"
+Classmodel$SEX [Classmodel$SEX == 2] <- "Female"
+
+```
+
+```{r}
+ggplot(Classmodel) +
+ aes(x = No..of.Brands, y = Avg..Price) +
+ geom_boxplot(fill = "#0c4c8a") +
+ theme_minimal()
+```
+ 2.(Basis for purchase) It is very important to notice the great volume of purchases at the pricing of around 8-12 dollars for the different brands that were included in the study. It is pretty clear that this pricing is very special to most consumers as it is very sought after according to the box plot. Promoting products and sending promotional opportunities for products around this price would be immensely beneficial to the over growth of a company. I also previously stated that consumers don't expact great discounts among these products so the pricing of these items seem very appreciated among consumers
+
+```{r}
+RBathsoap <- Bathsoap[1:300,]
+RLBathsoap <- RBathsoap[,2:15]
+Pracbathsop <- RBathsoap[,1:15]
+```
+
+```{r}
+rules <-apriori(RLBathsoap)
+```
+
+
+```{r}
+plot(rules)
+```
+
+```{r}
+inspect(rules[4:40])
+```
+
+```{r}
+ggplot(Classmodel) +
+ aes(x = SEX, y = No..of..Trans) +
+ geom_boxplot(fill = "#0c4c8a") +
+ theme_minimal()
+```
+2.(Demographics- SEX) When looking at Gender IMRB customers must look to advertising at women (2). Women are more likely to make transactions over men. The chart above states that women are the primary household shoppers making them more likely to see the product that will be at stores. Advertising to women is a very solid approach when attempting to increase market share within most households. 
+
+```{r}
+Newchart <- Bathsoap[c("SEC", "SEX", "HS", "Affluence.Index", "No..of.Brands", "Total.Volume", "No..of..Trans", "Br..Cd..55")]
+```
+
+
+```{r}
+Newchart$SEX [Newchart$SEX == 0] <- "Male"
+Newchart$SEX [Newchart$SEX == 1] <- "Male"
+Newchart$SEX [Newchart$SEX == 2] <- "Female"
+
+Newchart$Affluence.Index[Newchart$Affluence.Index == 0] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 1] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 2] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 3] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 4] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 5] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 6] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 7] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 8] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 9] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 10] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 11] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 12] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 13] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 14] <- "Poor"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 15] <- "Poor"
+
+Newchart$Affluence.Index[Newchart$Affluence.Index == 16] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 17] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 18] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 19] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 20] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 21] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 22] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 23] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 24] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 25] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 26] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 27] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 28] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 29] <- "Middle"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 30] <- "Middle"
+
+Newchart$Affluence.Index[Newchart$Affluence.Index == 31] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 32] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 33] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 34] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 35] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 36] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 37] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 38] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 39] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 40] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 41] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 42] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 43] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 43] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 44] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 45] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 46] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 47] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 48] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 49] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 50] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 51] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 52] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 53] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 54] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 55] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 56] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 57] <- "High"
+Newchart$Affluence.Index[Newchart$Affluence.Index == 58] <- "High"
+
+```
+
+
+```{r}
+ggplot(Newchart) +
+ aes(x = Total.Volume, fill = Affluence.Index) +
+ geom_histogram(bins = 30L) +
+ scale_fill_hue() +
+ theme_minimal()
+```
+
+2. (Purchase Behaivor) The Purchase behaivor shows clear correlation between Total Volume and poorer individuals. As we look at this bar chart it is clear that higher class consumers are not as likely to purchase a great volume of products the way that poorer consumers are willing to do. It is important to factor in that there are much fewer high class consumers which limits there ability to purchase a large qty of product. In saying that we also have to factor in that the Indian wealthy have around 54% of the entire wealth in India. So in saying the two former it is clear that the poorer & middle class consumers in India provide a much greater market to expand in and advertise to.
+
+Naive Bayes Theory below
+
+```{r}
+Classmodel$No..of.Brands <- cut(Classmodel$No..of.Brands, 4)
+```
+
+```{r}
+Classmodel$No..of.Brands <- factor(Classmodel$No..of.Brands)
+Classmodel$Total.Volume <- factor(Classmodel$Total.Volume)
+
+```
+
+```{r}
+set.seed(1234)
+```
+
+```{r}
+Part <- createDataPartition(Classmodel$SEX, p = .7, list = F)
+
+Classmodeltrain <- Classmodel[Part,]
+Classmodeltest <- Classmodel[-Part,]
+```
+
+```{r}
+Bay1 <- naive_bayes(SEX ~ . , data = Classmodeltrain)
+
+Bay1
+```
+
+```{r}
+Bayepred1 <- predict(Bay1, Classmodeltest, type = "class")
+```
+
+```{r}
+Bayepred1
+```
+
+3. By using this naive bayes & apriori algolrithm it is clear that our targeted consumers have the below characteristics as a group:
+a. Women 
+b. Ages 40 and up.
+c. Middle to Poor Socioeconomic status
+d. Large households
+
+```{r}
+table(x = Classmodel$SEX , y = Classmodel$Total.Volume)
+```
