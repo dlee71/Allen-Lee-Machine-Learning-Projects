@@ -1,0 +1,148 @@
+---
+title: "Assignment 2 BusAna"
+author: "1st markdown"
+date: "3/7/2021"
+output: html_document
+---
+
+```{r}
+install.packages('mlbench')
+library(mlbench)
+data(BostonHousing)
+
+```
+
+
+```{r}
+set.seed(2017)
+X=runif(100)*10
+Y=X*4+3.45
+Y=rnorm(100)*0.29*Y+Y
+
+```
+
+1a.
+```{r}
+plot(X,Y)
+```
+Yes we can definitely fit a linear model on this graph
+
+1b.
+```{r}
+Modco=lm(Y ~X)
+
+Modco$coefficients
+```
+Y = 4.465490X + B3.610759  
+
+```{r}
+Accuracy<-3.610759/4.465490
+Accuracy
+```
+1c.
+With a predictor of 81% that means that the x variable predicts the Y intercept 81% of the time accurately. 
+
+
+2a
+```{r}
+Mtcars<-data("mtcars")
+```
+
+```{r}
+View(mtcars)
+```
+
+```{r}
+James <- lm(mtcars$wt ~mtcars$hp)
+```
+
+```{r}
+James
+```
+```{r}
+.009401/1.838247
+```
+James is more accurate
+
+```{r}
+Chris<- lm(mtcars$mpg ~ mtcars$hp)
+Chris
+```
+```{r}
+MPG<--.06823/30.09886
+MPG
+```
+
+
+2b.
+```{r}
+lm(hp ~cyl + mpg, data = mtcars)
+```
+
+```{r}
+PredictedHP <- 54.067 + (23.979 *4) + (-.2775 * 22)
+```
+
+```{r}
+PredictedHP
+```
+
+3a.
+```{r}
+ArgPrice<-lm( formula = medv~ crim + chas + ptratio +  zn, data = BostonHousing)
+ArgPrice
+```
+```{r}
+summary(ArgPrice)
+```
+With a R-Squared of 36% this doesn't seem to be a good model in terms of accuracy
+
+3b 1
+```{r}
+Chas1 <- lm(medv ~ chas == 1, data = BostonHousing)
+chas2 <- lm(medv ~ chas == 0, data = BostonHousing)
+```
+
+
+```{r}
+Chas1
+
+chas2
+```
+Price not next to river = 22.094
+Price next to river = 28.44
+
+```{r}
+Pricedifference <- 28.44 - 22.094
+Pricedifference
+```
+The differences align in the method I used above and the regression modeling below
+```{r}
+Chasreg <- lm(medv ~ chas, data = BostonHousing)
+summary(Chasreg)
+```
+
+
+```{r}
+summary(ArgPrice)
+```
+With a Multiple R-Squared value of .3599 that is stating that only 35% of the median value can be explained by the crime crate, proportion of residential land zoned for lots over 25000 sqft., local pupil-teacher ratio, and whether the tract bounds the Chas River. Making this a pretty poor model in terms of accuracy.
+```{r}
+
+lm(medv~chas, data = BostonHousing)
+```
+
+3c.
+The chas river is the significant value in determining the housing price.P-Value of 0.000514
+
+3D.
+```{r}
+anova(ArgPrice)
+```
+Importance order is
+1. ptratio
+2. crim
+3. chas
+4. zn
+
+
