@@ -1,0 +1,341 @@
+---
+title: "Untitled"
+author: "1st markdown"
+date: "1/19/2021"
+output: html_document
+---
+
+```{r}
+install.packages("dplyr")
+install.packages("plyr")
+install.packages("TTR")
+library(dplyr)
+library(plyr)
+library(TTR)
+```
+
+
+```{r}
+online_retail <- read.csv("C:/Users/dvntl/Downloads/Online_Retail.csv")
+```
+
+```{r}
+colnames(online_retail)
+```
+2.
+```{r}
+online_retailnew <- cbind.data.frame(online_retail, Transprice)
+online_retailnew
+```
+
+```{r}
+Germany<-filter(select(online_retailnew, Country, Transprice), Country== "Germany")
+Germany
+```
+
+```{r}
+hist(Germany$Transprice)
+```
+
+
+```{r}
+Unicustomer <- unique(online_retail[,7])
+```
+
+12.
+```{r}
+Uniquecustomers<-length(Unicustomer)
+```
+
+2.
+```{r}
+TransactionValue <- online_retail[c('Quantity', 'UnitPrice', 'Country')]
+TransactionValue
+```
+```{r}
+Countries <-TransactionValue$Country
+Countries
+```
+
+
+```{r}
+Combined<- TransactionValue$Quantity * TransactionValue$UnitPrice
+Combined
+```
+
+
+```{r}
+Germany <-filter(TransactionValue, Country == "Germany")
+```
+
+
+```{r}
+Transprice <- online_retail$Quantity * online_retail$UnitPrice
+```
+
+```{r}
+Both<- data.frame(Transprice, Countries)
+Both
+```
+
+
+```{r}
+hist()
+```
+
+
+```{r}
+select(Both, Countries== Germany)
+```
+
+
+
+```{r}
+Stockandprice<- data.frame(online_retail$StockCode, Transprice)
+```
+
+```{r}
+Greaterfactor<- aggregate(x = Transprice,
+          by= list(online_retail$Country),
+          FUN = sum)
+```
+
+```{r}
+Stockandquant <- aggregate(x= Transprice,
+                           by = list(online_retail$StockCode),
+                           FUN = sum)
+```
+
+```{r}
+Stockandquant
+
+Pricesummed<-aggregate(x= Stockandquant$x,
+          by = list(Stockandquant$Group.1),
+          FUN = sum)
+```
+
+```{r}
+View(Pricesummed)
+```
+
+```{r}
+max(Pricesummed$x)
+```
+
+```{r}
+colnames(Pricesummed)[1] = "Group"
+```
+
+11.
+```{r}
+BestItem <- filter(Pricesummed, x>= 206245)
+
+BestItem
+```
+3.
+```{r}
+Greaterfactor
+```
+
+3
+```{r}
+Countriesgreater <- Greaterfactor$x >= 130000
+```
+
+```{r}
+Higherearningcount<- filter(Greaterfactor, x>= 130000)
+Higherearningcount
+```
+
+```{r}
+Germany <- filter(Higherearningcount, Group.1 =="Germany")
+```
+
+```{r}
+Countriesandquant <- aggregate(x= online_retail$Quantity,
+          by= list(online_retail$Country),
+          FUN = sum)
+```
+
+```{r}
+Countriesandquant
+
+Price <- online_retail$UnitPrice
+
+Price
+```
+
+
+```{r}
+countries <- online_retail$Country
+Stockcode <- online_retail$StockCode
+```
+
+```{r}
+TransactionValue
+```
+
+
+```{r}
+summarise(TransactionValue, countries)
+```
+
+```{r}
+table(online_retail$Country, online_retail$CustomerID== "NA")
+```
+
+```{r}
+Austrailia =filter(online_retail, Country== "Australia")
+Belgium = filter(online_retail, Country == "Belgium")
+Belgium = filter(online_retail, Country == "Belgium")
+
+```
+
+```{r}
+length(online_retail$Country)
+```
+```{r}
+Total <- table(online_retail$Country)/541909
+```
+
+```{r}
+TotalCountriespercent <- Total * 100
+
+TotalCountriespercent 
+```
+1.
+```{r}
+TotalCountriespercent[ c("ERIE", "France", "Germany", "United Kingdom")]
+```
+
+```{r}
+CustID <- online_retail$CustomerID
+
+IDs<-table(CustID)
+
+max(IDs)
+
+IDsInframe<- as.data.frame(IDs)
+
+IDsInframe
+
+Highestvolumecustomer<- filter(IDsInframe, Freq== 7983)
+```
+6.
+```{r}
+Highestvolumecustomer
+```
+
+
+```{r}
+colnames(online_retail)
+
+online_retail
+```
+7.
+```{r}
+colMeans(is.na.data.frame(online_retail))
+```
+
+```{r}
+CustomerandCountry <-data.frame(online_retail$CustomerID, online_retail$Country)
+
+CustomerandCountry
+```
+
+```{r}
+Group <- CustomerandCountry %>%
+  group_by(online_retail.CustomerID== "N/A", online_retail.Country)
+
+Group
+```
+```{r}
+AmountFalse<- table(Group$online_retail.Country, Group$`online_retail.CustomerID == "N/A"`== "FALSE") * .33203
+```
+
+```{r}
+AmountFalse
+```
+8.
+```{r}
+sum(AmountFalse)
+```
+
+```{r}
+NACountry <- sum(is.na(CustomerandCountry$online_retail.CustomerID))
+    ```
+
+```{r}
+NACountry
+```
+
+```{r}
+BAGR<- aggregate(x = CustomerandCountry$online_retail.CustomerID,
+          by= list(CustomerandCountry$online_retail.Country),
+          FUN = sum)
+```
+
+```{r}
+N<- is.na(CustomerandCountry$online_retail.CustomerID)
+CustomerandCountry
+```
+```{r}
+France <- filter(online_retail, Country == "France")
+France
+```
+
+```{r}
+StockQuantPrice <- online_retail[, c("StockCode", "UnitPrice", "Quantity")]
+```
+
+```{r}
+StockQuantPrice
+```
+```{r}
+FandQ <- France[, c("Country", "Quantity")]
+```
+
+```{r}
+FandQ
+```
+
+
+```{r}
+ReturnrateFandQ <-as.data.frame(France$Quantity)
+```
+
+```{r}
+ReturnrateFandQ
+```
+
+
+```{r}
+CancelledFrench <- filter(ReturnrateFandQ, `France$Quantity` <= -1)
+CancelledFrench
+```
+
+```{r}
+OpenFrench <- filter(ReturnrateFandQ, `France$Quantity` >= 0)
+```
+
+```{r}
+OpenFrench
+
+Summedopen <- sum(OpenFrench)
+```
+
+
+```{r}
+CancelledFrench
+
+summedclose <- sum(CancelledFrench)
+```
+
+```{r}
+Summedreturnrate<- summedclose/Summedopen
+```
+
+10.
+```{r}
+Summedreturnrate
+```
