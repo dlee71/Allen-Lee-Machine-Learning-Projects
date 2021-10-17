@@ -1,0 +1,144 @@
+import keras
+keras.__version__
+
+from keras.datasets import imdb
+(train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=10000)
+
+train_data[0]
+
+max([max(sequence) for sequence in train_data])
+
+word_index = imdb.get_word_index()
+reverse_word_index= dict([(value, key) for (key, value) in word_index.items()])
+
+decoded_review = ' '.join([reverse_word_index.get (i -3, '?') for i in train_data[0]])
+
+decoded_review
+
+import numpy as np
+
+def vectorize_sequences(sequences, dimension = 10000):
+  results = np.zeros((len(sequences), dimension))
+  for i, sequence in enumerate(sequences):
+    results[i, sequence] = 1.
+  return results
+
+x_train = vectorize_sequences(train_data)
+x_test = vectorize_sequences(test_data)
+
+x_train[0]
+
+y_train = np.asarray(train_labels).astype('float32')
+y_test = np.asarray(test_labels).astype('float32')
+
+from keras import models
+from keras import layers
+
+model= models.Sequential()
+model.add(layers.Dense(32, activation= 'tanh', input_shape= (10000, )))
+model.add(layers.Dense(32, activation= 'tanh'))
+model.add(layers.Dense(1, activation = 'sigmoid'))
+
+model.compile(optimizer='rmsprop',
+              loss= 'mse',
+              metrics=['accuracy'])
+
+from keras import optimizers
+
+model.compile(optimizer=optimizers.RMSprop(),
+              loss='mse',
+              metrics= ['accuracy'])
+
+from keras import losses
+from keras import metrics
+
+model.compile(optimizer=optimizers.RMSprop(lr=0.001),
+              loss=losses.mse,
+              metrics=['accuracy'])
+
+x_val = x_train[:10000]
+partial_x_train = x_train[10000:]
+
+y_val = y_train[:10000]
+partial_y_train = y_train[10000:]
+
+history = model.fit(
+    partial_x_train,
+    partial_y_train,
+    epochs= 10,
+    batch_size= 500,
+    validation_data=(x_val, y_val)
+)
+
+history_dict = history.history
+history_dict.keys()
+
+import matplotlib.pyplot as plt
+
+loss= history.history['loss']
+binary_acc = history.history['accuracy']
+val_loss = history.history['val_loss']
+val_binary_accuracy= history.history['val_accuracy']
+
+epochs = range(1, len(binary_acc) + 1)
+
+plt.plot(epochs, loss, 'bo', label='Training loss')
+
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Train and Validation loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+
+plt.show()
+
+When looking at the algorithm above this seems to be one of the greatest ways to maximize the most out of this keras function. It seems that the most optimal amount of nodes to have is 32 according to the return from this algorithm. 32 seems to be an amount of nodes that's not too large or too small. Both layers having 32 nodes seemed to maximize the accuracy levels as each epoch was run. Obviously only 1 node was included in the final layer as this layer can only have either 0 or 1's.
+
+When looking at the optimizer function relu was originally used in activating the model and it is an extremely popular function, but the tanh activation function showed one of the best perfomance to the model among the functions that were availible to be used. This created an extremely high accuracy percentage from the input to the output data. With the first two layers using tanh activation functions the last activation function included sigmoid as the function. The sigmoid function is of course needed as this allows us to keep our output between 0 and 1. This is what's needed as mostly all probabilities lie between the ranges of 0 and 1.  
+
+It seems that 10000 data points was a good amount to choose as it wasn't too small for the data set that it would cause overfitting from the algorithm. RMSProp was the optimizer that we chose in order to minimize the loss function and it brought the loss function to low rates. This optimizier seems to be the best for usage in a recurring network. The loss function that I am using is the mse (mean squared error) loss function. This is the most optimal loss function to use when we are attempting to penalize large errors made in each epoch by squaring them. This loss function also is very effective on minimizing the effects of outliers in a data set. This loss function did not effect the loss in the data as strongly as the binary_corssentrophy function. When attempting to judge the performance of our model it is extremely important to have the correct metrics argument. In order to ensure overfitting isn't an issue I chose accuracy as the metric to judge the performace of the model. In training the model it made more sense to use accuracy as the proper metric for jusdgement. The rest of this is pretty straight forward in the fitting of the model. 
+
+Initially I used a few other methods in this model that caused the accuracy to decrease a bit. Initially I included a dropout method of .5 to the model in order to remove a bit of the nodes from the model. This caused the accuracy to lessen a bit after the running of the epochs. I feel as though this issue took place as the lack of nodes caused for a certain amount of underfitting among the dataset. It seems that 32 was the sweet spot in the model to get a great amount of accuracy within the model. Initially I did not have a learning rate for both of the RMSProps in the model compiler which allowed the RMSProp function to automatically choose a learning rate. That caused the accuracy and loss functions to vary a bit. I then choose to put a learning rate of .001 in the model compiler and that kept the accuracy continuously on the rise with less fluctuation. Finally in changing the relu function to the tanh function it caused the accuracy to increase at a much quicker rate than previously. It also caused the loss function to not fall as swiftly as it was previously.
+
+plt.clf
+
+plt.plot(epochs, binary_acc, 'bo', label='Training acc')
+plt.plot(epochs, val_binary_accuracy, 'b', label= 'Validation acc')
+plt.title('Training and Validation Acc')
+plt.xlabel('Epoch')
+plt.ylabel('loss')
+plt.legend()
+
+plt.show()
+
+Code reconfigured in order to return different validation %
+
+
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.wrappers.scikit_learn import KerasClassifier
+from keras.constraints import maxnorm
+from keras.optimizers import SGD
+from sklearn.model_selection import cross_val_score
+
+model = models.Sequential()
+model.add(layers.Dense(64, activation='tanh', kernel_constraint=maxnorm(3)))
+model.add(layers.Dense(64, activation= 'tanh', kernel_constraint=maxnorm(3)))
+model.add(layers.Dense(1, activation='sigmoid'))
+
+model.compile(optimizer='RMSprop',
+              loss='mse',
+              metrics=['accuracy'])
+
+model.fit(x_train, y_train, epochs=10, batch_size=500, validation_data=(x_val, y_val))
+results= model.evaluate(x_test, y_test)
+
+After running the model initially I then attempted to rerun the model in order to see how adding different factors to the model would make adjustments in the validation of the model and see what changes would be made through out the validation loss and validation accuracy of the epochs. I kept a few of the areas of the factors consistent with my original training model. Things that were kept consistent are the following: tanh and sigmoid activation, Dense layers, 1 Nodes, RMSProp optimizer, mseloss function, accuracy metric. 
+
+I made the nodes much higher in order to increase the capacity of the dataset and help to ensure that underfitting in the validation model would not be an issue that would take place in the model being ran through the epochs. The worrisome part of making the nodes too large is that it might cause issues with overfitting the validation model. In looking at the accuracy level it seems that 68 is the perfect amount of nodes to add to the model in order to maximize accuracy in the validation model. I also chose to add the kernel_constraint function to my model in order to reduce the amount of overfitting that comes when you add a large amount of nodes in a model. That is why I set a maximum-norm weight of 3. I used the exact same amount of epochs as I did in the original model. It seems that the model is learning the dataset quiet well and that is affecting the validation of the model quiet greatly. 
+
+results
+
+model.predict(x_test)
+
