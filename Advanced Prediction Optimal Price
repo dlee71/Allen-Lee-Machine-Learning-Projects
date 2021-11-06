@@ -1,0 +1,104 @@
+---
+title: "Untitled"
+author: "1st markdown"
+date: "10/28/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+library(ISLR)
+library(dplyr)
+library(glmnet)
+library(ggplot2)
+library(stargazer)
+```
+
+```{r}
+SafeBabies <- Carseats %>% select("Sales", "Price", "ShelveLoc")
+```
+
+```{r}
+SafeBabies_Good <- SafeBabies[SafeBabies$ShelveLoc == "Good",]
+SafeBabies_Bad <- SafeBabies[SafeBabies$ShelveLoc == "Bad",]
+```
+
+```{r}
+Good_Fit <- lm(Sales ~ Price, data = SafeBabies_Good)
+Bad_Fit <- lm(Sales ~ Price, data = SafeBabies_Bad)
+```
+
+```{r}
+Price_good_55 <- (-17968.85 + (55 * -65.78))/(2* -65.78)
+Price_good_40 <- (-17968.85 + (40 * -65.78))/(2* -65.78)
+Price_good_45 <- (-17968.85 + (45 * -65.78))/(2* -65.78)
+Price_good_50 <- (-17968.85 + (50 * -65.78))/(2* -65.78)
+Price_good_60 <- (-17968.85 + (60 * -65.78))/(2* -65.78)
+Price_good_65 <- (-17968.85 + (65 * -65.78))/(2* -65.78)
+Price_good_70 <- (-17968.85 + (70 * -65.78))/(2* -65.78)
+Price_good_75 <- (-17968.85 + (75 * -65.78))/(2* -65.78)
+Price_good_80 <- (-17968.85 + (80 * -65.78))/(2* -65.78)
+Price_good_85 <- (-17968.85 + (85 * -65.78))/(2* -65.78)
+```
+
+```{r}
+Cost_Variation<- data_frame(seq(40, 85, 5))
+
+Cost_Variation
+```
+
+
+```{r}
+Good_P <- c(Price_good_40, Price_good_45, Price_good_50, Price_good_55, Price_good_60,
+            Price_good_65, Price_good_70, Price_good_75, Price_good_80, Price_good_85 )
+
+Good_Plot <- as.data.frame(Good_P)
+
+Good_Plot
+```
+
+```{r}
+Price_bad_55 <- (-11832.98 + (55 * -55.22))/(2* -55.22)
+Price_bad_40 <- (-11832.98 + (40 * -55.22))/(2* -55.22)
+Price_bad_45 <- (-11832.98 + (45 * -55.22))/(2* -55.22)
+Price_bad_50 <- (-11832.98 + (50 * -55.22))/(2* -55.22)
+Price_bad_60 <- (-11832.98 + (60 * -55.22))/(2* -55.22)
+Price_bad_65 <- (-11832.98 + (65 * -55.22))/(2* -55.22)
+Price_bad_70 <- (-11832.98 + (70 * -55.22))/(2* -55.22)
+Price_bad_75 <- (-11832.98 + (75 * -55.22))/(2* -55.22)
+Price_bad_80 <- (-11832.98 + (80 * -55.22))/(2* -55.22)
+Price_bad_85 <- (-11832.98 + (85 * -55.22))/(2* -55.22)
+
+Cost_Optimal_Price_Good <- data.frame(Cost_Variation, Good_Plot)
+
+Cost_Optimal_Price_Good
+
+Cost_Optimal_Price_Bad <- data.frame(Cost_Variation, Bad_Plot)
+
+Cost_Optimal_Price_Bad
+```
+
+```{r}
+Bad_P <- c(Price_bad_40, Price_bad_45, Price_bad_50, Price_bad_55, Price_bad_60, Price_bad_65,
+           Price_bad_70, Price_bad_75, Price_bad_80, Price_bad_85)
+
+Bad_Plot <- as.data.frame(Bad_P)
+
+Bad_Plot
+
+
+```
+
+
+
+```{r}
+plot(Cost_Optimal_Price_Good,
+xlab="Cost", ylab="Price", pch=15)
+```
+
+```{r}
+plot(Cost_Optimal_Price_Bad,
+    xlab="Cost", ylab="Price", pch=10)
+
+```
